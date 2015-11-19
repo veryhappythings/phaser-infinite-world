@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Asteroids</title>
+	<script type="text/javascript" src="js/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
+
+function preload() {
+  game.load.image('background', 'img/debug-grid-1920x1920.png');
+  game.load.image('ship', 'img/ship.png');
+}
+
+function create() {
+  chunk_background = game.add.tileSprite(chunk_position.x, chunk_position.y, 1920, 1920, 'background');
+
+  game.physics.startSystem(Phaser.Physics.ARCADE);
+
+  player = game.add.sprite(game.world.width / 2, game.world.height / 2, 'ship');
+  player.scale.setTo(0.4, 0.4);
+  player.anchor.setTo(0.5, 0.5);
+  game.physics.arcade.enable(player);
+
+  // Hand rolled physics allows us to move the world instead of the player
+  dampening = 0.95;
+  player_acceleration = new Phaser.Point(0, 0);
+  player_velocity = new Phaser.Point(0, 0);
+
+  cursors = game.input.keyboard.createCursorKeys();
+
+  game.camera.follow(player);
+}
+
+function update() {
+  if (cursors.left.isDown) {
+      player.rotation -= 0.1;
+  }
+  else if (cursors.right.isDown) {
+      player.rotation += 0.1;
+  }
+  if (cursors.up.isDown) {
+    game.physics.arcade.accelerationFromRotation(player.rotation - Math.PI/2, 20, player_acceleration);
+  }
+  else {
+    player_acceleration.set(0);
+  }
+
+  player_velocity.x += player_acceleration.x;
+  player_velocity.y += player_acceleration.y;
+
+  // Instead of moving the player position like this:
+  //player.x += player_velocity.x * this.game.time.physicsElapsed;
+  //player.y += player_velocity.y * this.game.time.physicsElapsed;
+
+  // Move the tilePosition of the background the opposite amount.
+  // This slides the image across the tileSprite without changing its position
+  // So in this demo, nothing ever actually moves!
+  chunk_background.tilePosition.x -= player_velocity.x * this.game.time.physicsElapsed;
+  chunk_background.tilePosition.y -= player_velocity.y * this.game.time.physicsElapsed;
+  player_velocity.x *= dampening;
+  player_velocity.y *= dampening;
+}
+
+function render() {
+  game.debug.spriteInfo(player, 32, 32);
+  //game.debug.spriteInfo(ast, 32, 32);
+}
+
+</script>
+
+</body>
+</html>

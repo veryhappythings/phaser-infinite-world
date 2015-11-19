@@ -1,0 +1,14 @@
+{
+  "name": "phaser-infinite-world",
+  "version": "1.0.0",
+  "description": "phaser-infinite-world",
+  "scripts": {
+  },
+  "author": "Mac Chapman",
+  "license": "MIT",
+  "repository": "",
+  "dependencies": {
+    "browser-sync": "^2.7.1",
+    "gulp": "^3.8.11"
+  }
+}
